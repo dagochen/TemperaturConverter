@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -26,7 +27,7 @@ import de.uni_hamburg.informatik.hci.id.TemperaturConverter.Model.TemperatureMod
  * @author Daniel Sinn
  * @version 16.06.14
  */
-public class TemperatureView extends Observable implements Observer
+public class TemperatureView implements Observer
 {
 
     private JTextField _fahrenheitText = new JTextField("32", 3);
@@ -76,7 +77,7 @@ public class TemperatureView extends Observable implements Observer
         _frame.setTitle("Temperature Converter - MVC-Model");
 
         // event listener for interactive elements
-        registriereListener();
+       
     }
 
     /**
@@ -104,9 +105,9 @@ public class TemperatureView extends Observable implements Observer
      * 
      * @return Temperatur in Fahrenheit: °F
      */
-    public double gibFahrenheitSlider()
+    public JSlider gibFahrenheitSlider()
     {
-        return _fahrenheitSlider.getValue();
+        return _fahrenheitSlider;
     }
 
     /**
@@ -114,9 +115,9 @@ public class TemperatureView extends Observable implements Observer
      * 
      * @return Temperatur in Celsius: °C
      */
-    public double gibCelsiusSlider()
+    public JSlider gibCelsiusSlider()
     {
-        return _celsiusSlider.getValue();
+        return _celsiusSlider;
     }
 
     /*
@@ -151,6 +152,11 @@ public class TemperatureView extends Observable implements Observer
         _frame.setVisible(true);
 
     }
+    
+    public void starteAenderungen()
+    {
+        _aenderungNotwendig = true;
+    }
 
     /**
      * Beendet die Änderungen. Wird nach Abschluss einer Änderung aufgerufen, um
@@ -183,68 +189,22 @@ public class TemperatureView extends Observable implements Observer
             _celsiusSlider.setValue((int) celsius);
 
     }
-    
-    
-    private void registriereListener()
+
+    public JButton gibNachFahrenheitUmwandeln()
     {
-        _nachCelsiusUmwandeln.addActionListener(new ActionListener()
-        {
-
-            public void actionPerformed(ActionEvent e)
-            {
-                if (!_aenderungNotwendig)
-                {
-                    _aenderungNotwendig = true;
-                    setChanged();
-                    notifyObservers(ViewUpdate.CelsiusText);
-                }
-
-            }
-        });
-        _nachFahrenheitUmwandeln.addActionListener(new ActionListener()
-        {
-
-            public void actionPerformed(ActionEvent e)
-            {
-                if (!_aenderungNotwendig)
-                {
-                    _aenderungNotwendig = true;
-                    setChanged();
-                    notifyObservers(ViewUpdate.FahrenheitText);
-
-                }
-
-            }
-        });
-        _fahrenheitSlider.addChangeListener(new ChangeListener()
-        {
-
-            public void stateChanged(ChangeEvent e)
-            {
-                if (!_aenderungNotwendig)
-                {
-                    _aenderungNotwendig = true;
-                    setChanged();
-                    notifyObservers(ViewUpdate.FahrenheitSlider);
-
-                }
-            }
-        });
-        _celsiusSlider.addChangeListener(new ChangeListener()
-        {
-
-            public void stateChanged(ChangeEvent e)
-            {
-                if (!_aenderungNotwendig)
-                {
-                    _aenderungNotwendig = true;
-                    setChanged();
-                    notifyObservers(ViewUpdate.CelsiusSlider);
-
-                }
-
-            }
-        });
-
+        // TODO Auto-generated method stub
+      return  _nachFahrenheitUmwandeln;
     }
+
+    public JButton gibNachCelsiusUmwandeln()
+    {
+        return _nachCelsiusUmwandeln;
+    }
+
+    public boolean istAenderungNotwendig()
+    {
+        // TODO Auto-generated method stub
+        return _aenderungNotwendig;
+    }
+
 }

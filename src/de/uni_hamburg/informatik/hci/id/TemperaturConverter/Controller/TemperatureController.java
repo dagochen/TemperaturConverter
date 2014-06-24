@@ -1,7 +1,12 @@
 package de.uni_hamburg.informatik.hci.id.TemperaturConverter.Controller;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Observable;
 import java.util.Observer;
+
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import de.uni_hamburg.informatik.hci.id.TemperaturConverter.Enum.ViewUpdate;
 import de.uni_hamburg.informatik.hci.id.TemperaturConverter.Model.TemperatureModel;
@@ -15,11 +20,12 @@ import de.uni_hamburg.informatik.hci.id.TemperaturConverter.View.TemperatureView
  * @version 16.06.14
  * 
  */
-public class TemperatureController implements Observer
+public class TemperatureController 
 {
 
     private TemperatureModel _model;
     private TemperatureView _view;
+   
 
     public TemperatureController()
     {
@@ -29,37 +35,79 @@ public class TemperatureController implements Observer
         _view.sichtbarMachen();
 
         registriereBeobachter();
+        registriereUiAktionen();
+
     }
 
-
-    /* (non-Javadoc)
-     * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
-     */
-    public void update(Observable o, Object arg)
+    private void registriereUiAktionen()
     {
 
-        if (arg.equals(ViewUpdate.CelsiusText))
+        _view.gibNachCelsiusUmwandeln().addActionListener(new ActionListener()
         {
-            _model.setzeFahrenheit(_view.gibFahrenheitText());
-        }
-        else if (arg.equals(ViewUpdate.FahrenheitText))
+            public void actionPerformed(ActionEvent e)
+            {
+                if (!_view.istAenderungNotwendig())
+                {
+                    _view.starteAenderungen();
+                    _model.setzeFahrenheit(_view.gibFahrenheitText());
+                    _view.beendeAenderungen();
+                }
+
+            }
+        });
+        _view.gibNachFahrenheitUmwandeln().addActionListener(
+                new ActionListener()
+                {
+
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        if (!_view.istAenderungNotwendig())
+                        {
+                            _view.starteAenderungen();
+                            _model.setzeCelsius(_view.gibCelsiusText());
+                            _view.beendeAenderungen();
+                        }
+
+                    }
+                });
+
+        _view.gibFahrenheitSlider().addChangeListener(new ChangeListener()
         {
-            _model.setzeCelsius(_view.gibCelsiusText());
-        }
-        else if (arg.equals(ViewUpdate.CelsiusSlider))
+
+            public void stateChanged(ChangeEvent e)
+            {
+                if (!_view.istAenderungNotwendig())
+                {
+                    _view.starteAenderungen();
+                    _model.setzeFahrenheit(_view.gibFahrenheitSlider().getValue());
+                    _view.beendeAenderungen();
+                }
+            }
+        });
+
+        _view.gibCelsiusSlider().addChangeListener(new ChangeListener()
         {
-            _model.setzeCelsius(_view.gibCelsiusSlider());
-        }
-        else if (arg.equals(ViewUpdate.FahrenheitSlider))
-        {
-            _model.setzeFahrenheit(_view.gibFahrenheitSlider());
-        }
-        _view.beendeAenderungen();
+
+            public void stateChanged(ChangeEvent e)
+            {
+                if (!_view.istAenderungNotwendig())
+                {
+                   _view.starteAenderungen();
+                    _model.setzeCelsius(_view.gibCelsiusSlider().getValue());
+                    _view.beendeAenderungen();
+                }
+
+            }
+        });
+
     }
+
+   
+
     private void registriereBeobachter()
     {
         _model.addObserver(_view);
-        _view.addObserver(this);
-        
+       
+
     }
 }
